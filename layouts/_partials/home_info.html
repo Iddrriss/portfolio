@@ -1,0 +1,40 @@
+{{- with site.Params.homeInfoParams }}
+<article class="first-entry home-info">
+    <div class="profile-row">
+        <img src="{{ "images/profile.png" | relURL }}" alt="Shofadekan Idris" class="profile-photo" />
+        <div>
+            <header class="entry-header">
+                <h1>{{ .Title | markdownify }}</h1>
+            </header>
+            <p class="tagline">DFIR • Network Forensics • Malware Analysis • OSINT</p>
+        </div>
+    </div>
+    <div class="entry-content md-content">
+        {{ $opts := dict "display" "block" }}
+        {{ .Content | $.Page.RenderString $opts }}
+    </div>
+    <footer class="entry-footer">
+        {{ partial "social_icons.html" (dict "align" site.Params.homeInfoParams.AlignSocialIconsTo) }}
+    </footer>
+
+    {{ $featured := where site.RegularPages "Params.featured" true }}
+    {{ if $featured }}
+    <div class="featured-grid">
+        {{ range $featured }}
+        <a href="{{ .RelPermalink }}" class="featured-card">
+            <span class="featured-tag">{{ .Section }}</span>
+            <h3>{{ .Title }}</h3>
+            {{ with .Params.tags }}
+            <div class="tag-pills">
+                {{ range first 3 . }}
+                <span class="pill">{{ . }}</span>
+                {{ end }}
+            </div>
+            {{ end }}
+            <p>{{ .Params.summary | default .Summary | truncate 100 }}</p>
+        </a>
+        {{ end }}
+    </div>
+    {{ end }}
+</article>
+{{- end -}}

@@ -1,0 +1,65 @@
+baseURL = "https://iddrriss.github.io/portfolio/"
+languageCode = "en-us"
+title = "Oxseeker"
+theme = "PaperMod"
+paginate = 5
+[params]
+  env = "production"
+  description = "DFIR case investigations, technical projects, and writeups."
+  author = "Shofadekan Idris"
+  DateFormat = "January 2006"
+  ShowReadingTime = true
+  ShowShareButtons = false
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowWordCount = false
+  ShowToc = true
+  ShowSearch = true
+  disableSpecial1stPost = true
+  [params.homeInfoParams]
+    Title = "Digital Investigator"
+    Content = "I investigate how systems get compromised, then write up how it happened in turn helping organisation recover and mitigate threats proficiently. DFIR case work, technical projects, and forensic tooling."
+  [[params.socialIcons]]
+    name = "linkedin"
+    url = "https://linkedin.com/in/shofadekanidris"
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/Iddrriss"
+  [[params.socialIcons]]
+    name = "medium"
+    url = "https://0xseeker.medium.com"
+  [[params.socialIcons]]
+    name = "substack"
+    url = "https://oxseeker.substack.com"
+  [[params.socialIcons]]
+    name = "x"
+    url = "https://x.com/0xseeker"
+[menu]
+  [[menu.main]]
+    identifier = "investigations"
+    name = "Investigations"
+    url = "/investigations/"
+    weight = 10
+  [[menu.main]]
+    identifier = "projects"
+    name = "Technical Projects"
+    url = "/projects/"
+    weight = 20
+  [[menu.main]]
+    identifier = "blog"
+    name = "Blog"
+    url = "/blog/"
+    weight = 25
+
+  [[menu.main]]
+    identifier = "whoami"
+    name = "whoami"
+    url = "/whoami/"
+    weight = 30
+
+  [[menu.main]]
+    identifier = "search"
+    name = "Search"
+    url = "/search/"
+    weight = 40
