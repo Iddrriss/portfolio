@@ -1,6 +1,6 @@
 +++
 date = '2026-08-22T21:53:15-04:00'
-draft = true
+draft = false
 title = 'Whoami'
 +++
 Hi there, I'm Idris
