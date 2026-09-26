@@ -8,7 +8,7 @@ summary: "Windows Internals- prefetch files"
 ---
 
 
-![Prefetch image(Prefetch.png)
+![picture of prefetch](Prefetch.png)
 
 
 What they are Prefetch (.pf) files are a Windows Memory Manager feature (since XP) that logs data about application execution to speed up subsequent launches. Located at "C:\Windows\Prefetch\." Only enabled by default on non-SSD/non-server systems traditionally, though Win10/11 behavior varies (Superfetch/SysMain service controls it — check if enabled, as it affects evidentiary reliability).
