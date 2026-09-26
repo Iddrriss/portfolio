@@ -1,9 +1,9 @@
 ---
-title: "Your Blog Post Title"
-date: 2026-09-20
+title: "Detecting Network abuse SSH and FTP"
+date: 2026-09-26
 draft: false
-tags: ["OSINT", "Email Forensics"]
-summary: "One-line summary for the card/listing."
+tags: ["Networking", "Network Forensics"]
+summary: "Understanding the common network abuse on SSH and FTP."
 ---
 
 SSH -> Secure shell is used to establish remote connection between to two endpoints (client-server or client to client) over the network. Native to all operating systems.
