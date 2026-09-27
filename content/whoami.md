@@ -14,3 +14,5 @@ I believe good investigation is only as useful as the report behind it so alongs
 I also lead HTB Ondo, cybersecurity community through the Hack The Box meetup initiative, where I've rebuilt team structure and programm management bringing a global cybersecurity communitity to our local doorstep.
  
 Open to DFIR, SOC, and threat-hunting conversations, and to opportunities to contribute or collaborate.
+
+Resume here -> https://docs.google.com/document/d/1_JDTyuQHfHnYbRzJTmHQrOVAzeuLLbSCtHzsiSE9KF4/edit?usp=sharing
