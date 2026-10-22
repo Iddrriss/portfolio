@@ -17,8 +17,7 @@ PHP2Shell is a pair of critical unauthenticated remote code execution flaws in t
 - **Detection:** no confirmed IOCs exist. Detection is behavioural: crashing workers, memory-limit fatals, odd multipart POSTs, and web-user processes doing things a web server should not.
 - **Patching:** a patched file on disk is not enough. Restart every PHP worker.
 
-![wiz php2shell](Wiz php.png)
-
+![Wiz PHP2Shell diagram](Wiz-php.png)
 
 ## Timeline
 
