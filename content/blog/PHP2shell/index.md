@@ -1,5 +1,5 @@
 ---
-title: "PHP2Shell (CVE-2026-109618 / CVE-2026-109619): Detection and Response Notes
+title: "PHP2Shell (CVE-2026-109618 / CVE-2026-109619): Detection and Response Notes"
 date: 2026-10-22
 draft: false
 tags: ["CVE", "Vulnerability", "PHP", "RCE"]
